@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#176b3a">
+<title>Mkulima Doctor Pro | Smart Farming</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f2f8f1;color:#20352a}
+header{background:#176b3a;color:white;padding:24px 18px}
+header h1{margin:0;font-size:25px}
+header p{margin:8px 0 0}
+main{max-width:680px;margin:auto;padding:16px}
+.card{background:white;padding:18px;margin:14px 0;border-radius:15px;box-shadow:0 3px 12px #0000000d}
+h2{font-size:19px;margin-top:0}
+label{display:block;font-weight:bold;margin:14px 0 7px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #ccd9ce;border-radius:9px;font-size:16px;background:white}
+button{width:100%;padding:14px;background:#176b3a;color:white;border:0;border-radius:10px;font-size:16px;font-weight:bold;margin-top:14px}
+#preview{display:none;width:100%;max-height:300px;object-fit:contain;margin-top:12px}
+#result{white-space:pre-wrap;line-height:1.6}
+.note{font-size:13px;color:#607267;line-height:1.5}
+footer{text-align:center;padding:22px;color:#617568;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+<h1>🌱 Mkulima Doctor Pro</h1>
+<p>Smart farming support for Kenyan farmers</p>
+</header>
+<main>
+<section class="card">
+<h2>👨🏽‍🌾 Karibu, Farmer!</h2>
+<p>Explore practical guidance for crop problems and healthier plants.</p>
+<p class="note">This is the new Mkulima Doctor Pro website. Photo-based AI diagnosis will be added after a secure AI service is connected.</p>
+</section>
+<section class="card">
+<h2>📸 Crop Disease Doctor</h2>
+<label for="crop">Select your crop</label>
+<select id="crop">
+<option value="">Choose your crop</option>
+<option>Maize</option>
+<option>Tomato</option>
+<option>Beans</option>
+<option>Potato</option>
+<option>Kale / Sukuma wiki</option>
+<option>Banana</option>
+<option>Avocado</option>
+<option>Other</option>
+</select>
+<label for="photo">Upload a plant photo</label>
+<input id="photo" type="file" accept="image/*">
+<img id="preview" alt="Selected plant photo">
+<label for="symptoms">Describe the symptoms</label>
+<textarea id="symptoms" rows="4" placeholder="Example: Yellow leaves, brown spots, wilting..."></textarea>
+<button id="diagnose">Get Farming Guidance</button>
+<div id="output" hidden>
+<h2>🌿 Your Guidance</h2>
+<p id="result"></p>
+</div>
+</section>
+<section class="card">
+<h2>🌾 Healthy Farming Tips</h2>
+<p>• Check crops regularly for unusual changes.</p>
+<p>• Photograph the whole plant and affected leaves.</p>
+<p>• Check soil moisture and drainage.</p>
+<p>• Confirm the cause before applying pesticides.</p>
+</section>
+</main>
+<footer>Mkulima Doctor Pro · Smart support for farmers</footer>
+<script>
+const photo=document.getElementById('photo');
+const preview=document.getElementById('preview');
+photo.addEventListener('change',()=>{
+ const file=photo.files[0];
+ if(!file){preview.style.display='none';return;}
+ if(!file.type.startsWith('image/')){
+  alert('Please choose an image.');
+  photo.value='';
+  return;
+ }
+ if(file.size>8*1024*1024){
+  alert('Please choose a photo smaller than 8 MB.');
+  photo.value='';
+  return;
+ }
+ preview.src=URL.createObjectURL(file);
+ preview.style.display='block';
+});
+document.getElementById('diagnose').addEventListener('click',()=>{
+ const crop=document.getElementById('crop').value;
+ const symptoms=document.getElementById('symptoms').value.trim();
+ if(!crop){alert('Please select your crop first.');return;}
+ if(!symptoms&&!photo.files.length){
+  alert('Upload a plant photo or describe the symptoms.');
+  return;
+ }
+ document.getElementById('output').hidden=false;
+ document.getElementById('result').textContent=
+ 'Crop: '+crop+'\n\n'+
+ 'Your details have been entered successfully.\n\n'+
+ 'Suggested next steps:\n'+
+ '1. Check whether the problem is spreading.\n'+
+ '2. Inspect both sides of affected leaves.\n'+
+ '3. Check watering, drainage and recent weather.\n'+
+ '4. Consult an agricultural officer before using pesticides.\n\n'+
+ 'Reported symptoms: '+(symptoms||'Please have the uploaded photo examined by an agricultural expert.')+
+ '\n\nNote: AI photo diagnosis is not connected yet. These are general precautions, not a confirmed diagnosis.';
+});
+</script>
+</body>
+</html>
