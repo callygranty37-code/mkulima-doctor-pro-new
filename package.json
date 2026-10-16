@@ -1,0 +1,14 @@
+
+{
+  "name": "mkulima-doctor-pro",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mkulima Doctor Pro secure AI farming backend",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "openai": "^4.85.4"
+  }
+}
