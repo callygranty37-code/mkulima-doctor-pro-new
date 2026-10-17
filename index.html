@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mkulima Doctor Pro</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f2f8f1;color:#20352a}
+header{background:#176b3a;color:white;padding:22px}
+main{max-width:650px;margin:auto;padding:16px}
+.card{background:white;padding:18px;margin:14px 0;border-radius:14px}
+label{display:block;margin:14px 0 7px;font-weight:bold}
+input,select,textarea,button{width:100%;padding:12px;margin:5px 0;font-size:16px;box-sizing:border-box}
+button{background:#176b3a;color:white;border:0;border-radius:8px}
+#preview{display:none;max-width:100%;max-height:250px}
+#result{white-space:pre-wrap;line-height:1.5}
+</style>
+</head>
+<body>
+<header>
+<h1>🌱 Mkulima Doctor Pro</h1>
+<p>AI farming support for Kenyan farmers</p>
+</header>
+<main>
+<section class="card">
+<h2>Crop Disease Doctor</h2>
+<label for="crop">Select crop</label>
+<select id="crop">
+<option value="">Choose crop</option>
+<option>Maize</option><option>Tomato</option><option>Beans</option>
+<option>Potato</option><option>Kale / Sukuma wiki</option>
+<option>Banana</option><option>Avocado</option><option>Other</option>
+</select>
+<label for="photo">Plant photo (optional)</label>
+<input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
+<img id="preview" alt="Plant preview">
+<label for="symptoms">Describe symptoms</label>
+<textarea id="symptoms" rows="4" placeholder="Yellow leaves, spots, wilting..."></textarea>
+<button id="diagnose">Diagnose My Crop with AI</button>
+<h3>AI Guidance</h3>
+<p id="result" aria-live="polite">Select a crop to begin.</p>
+</section>
+<section class="card">
+<h3>Healthy farming tips</h3>
+<p>Inspect crops regularly. Check leaf surfaces and soil drainage. Confirm the cause before using pesticides.</p>
+</section>
+</main>
+<script>
+const photo=document.getElementById('photo');
+const preview=document.getElementById('preview');
+photo.addEventListener('change',()=>{
+ const f=photo.files[0];
+ if(!f)return;
+ if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>2800000){
+  alert('Choose a JPEG, PNG or WebP photo smaller than 2.8 MB.');
+  photo.value='';preview.style.display='none';return;
+ }
+ preview.src=URL.createObjectURL(f);
+ preview.style.display='block';
+});
+document.getElementById('diagnose').addEventListener('click',async()=>{
+ const crop=document.getElementById('crop').value;
+ const symptoms=document.getElementById('symptoms').value.trim();
+ const f=photo.files[0];
+ const result=document.getElementById('result');
+ if(!crop){alert('Select a crop first.');return;}
+ if(!symptoms&&!f){alert('Upload a photo or describe symptoms.');return;}
+ const btn=document.getElementById('diagnose');
+ btn.disabled=true;btn.textContent='Analyzing...';
+ result.textContent='Connecting to AI...';
+ try{
+  let image;
+  if(f)image=await new Promise((resolve,reject)=>{
+   const r=new FileReader();r.onload=()=>resolve(r.result);
+   r.onerror=()=>reject(new Error('Could not read photo.'));
+   r.readAsDataURL(f);
+  });
+  const res=await fetch('/.netlify/functions/diagnose',{
+   method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({crop,symptoms,image})
+  });
+  const data=await res.json();
+  if(!res.ok)throw new Error(data.error||'Server error '+res.status);
+  if(!data.guidance)throw new Error('No guidance returned.');
+  result.textContent=data.guidance;
+ }catch(e){
+  result.textContent='AI connection failed: '+e.message;
+ }finally{
+  btn.disabled=false;btn.textContent='Diagnose My Crop with AI';
+ }
+});
+</script>
+</body>
+</html>
